@@ -44,12 +44,12 @@ with st.sidebar:
     # Load data
     st.header('Input data')
 
-    uploaded_file = st.file_uploader("Upload a pdf file", type=["pdf"])
+    uploaded_file = st.file_uploader("Upload your file")
     if uploaded_file is not None:
         df = pd.read_csv(uploaded_file, index_col=False)
 
 if "messages" not in st.session_state:
-    st.session_state["messages"] = [{"role": "assistant", "content": "Please upload your heaalthcare report so I can help you"}]
+    st.session_state["messages"] = [{"role": "assistant", "content": "Please upload your healthcare report so I can help you"}]
 
 for msg in st.session_state.messages:
     st.chat_message(msg["role"]).write(msg["content"])
