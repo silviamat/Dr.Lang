@@ -7,6 +7,21 @@ from sklearn.metrics import mean_squared_error, r2_score
 import altair as alt
 import time
 import zipfile
+import streamlit as st
+# from langchain.llms import OpenAI
+# from langchain.chat_models import ChatOpenAI
+from langchain_openai import ChatOpenAI
+import os
+import openai
+from openai import OpenAI
+from langchain.prompts import ChatPromptTemplate
+
+from dotenv import load_dotenv, find_dotenv
+_ = load_dotenv(find_dotenv()) # read local .env file
+openai.api_key = os.environ['OPENAI_API_KEY']
+llm_model = "gpt-3.5-turbo"
+
+openai_api_key = 'sk-proj-UwIFmR4JTFkG2fZQkyTMT3BlbkFJ0rmL1AOupeUBeNA8oiYd'
 
 # Page title
 st.set_page_config(page_title='Dr.Lang', page_icon='🩺')
@@ -48,11 +63,8 @@ for msg in st.session_state.messages:
     st.chat_message(msg["role"]).write(msg["content"])
 
 if prompt := st.chat_input():
-    if not openai_api_key:
-        st.info("Please add your OpenAI API key to continue.")
-        st.stop()
-
     client = OpenAI(api_key=openai_api_key)
+    # client = ChatOpenAI(temperature=0.0, model=llm_model)
     st.session_state.messages.append({"role": "user", "content": prompt})
     st.chat_message("user").write(prompt)
     response = client.chat.completions.create(model="gpt-3.5-turbo", messages=st.session_state.messages)
