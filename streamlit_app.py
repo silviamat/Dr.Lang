@@ -21,6 +21,8 @@ _ = load_dotenv(find_dotenv()) # read local .env file
 openai.api_key = os.environ['OPENAI_API_KEY']
 llm_model = "gpt-3.5-turbo"
 
+openai_api_key = 'sk-proj-UwIFmR4JTFkG2fZQkyTMT3BlbkFJ0rmL1AOupeUBeNA8oiYd'
+
 # Page title
 st.set_page_config(page_title='Dr.Lang', page_icon='🩺')
 st.title('🧑‍⚕️ Dr.Lang')
