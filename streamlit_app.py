@@ -16,12 +16,15 @@ import openai
 from openai import OpenAI
 from langchain.prompts import ChatPromptTemplate
 
-from dotenv import load_dotenv, find_dotenv
-_ = load_dotenv(find_dotenv()) # read local .env file
-openai.api_key = os.environ['OPENAI_API_KEY']
+# from dotenv import load_dotenv, find_dotenv
+# _ = load_dotenv(find_dotenv()) # read local .env file
+# openai.api_key = os.environ['OPENAI_API_KEY']
+
 llm_model = "gpt-3.5-turbo"
 
-openai_api_key = 'sk-proj-UwIFmR4JTFkG2fZQkyTMT3BlbkFJ0rmL1AOupeUBeNA8oiYd'
+openai_api_key = 'sk-proj-2pwI1AC61NYKzN4AWk5ZT3BlbkFJJKBzaj6zuN9nXb1Ms5IJ'
+client = OpenAI(api_key=openai_api_key)
+# print(client)
 
 # Page title
 st.set_page_config(page_title='Dr.Lang', page_icon='🩺')
@@ -56,21 +59,50 @@ with st.sidebar:
     if uploaded_file is not None:
         df = pd.read_csv(uploaded_file, index_col=False)
 
+if 'openai_model' not in st.session_state:
+    st.session_state['openai_model'] = 'gpt-3.5-turbo'
+
 if "messages" not in st.session_state:
-    st.session_state["messages"] = [{"role": "assistant", "content": "How can I help you?"}]
+    st.session_state.messages = []
 
 for msg in st.session_state.messages:
-    st.chat_message(msg["role"]).write(msg["content"])
+    with st.chat_message(msg["role"]):
+        st.markdown(msg["content"])
 
-if prompt := st.chat_input():
-    client = OpenAI(api_key=openai_api_key)
-    # client = ChatOpenAI(temperature=0.0, model=llm_model)
-    st.session_state.messages.append({"role": "user", "content": prompt})
-    st.chat_message("user").write(prompt)
-    response = client.chat.completions.create(model="gpt-3.5-turbo", messages=st.session_state.messages)
-    msg = response.choices[0].message.content
-    st.session_state.messages.append({"role": "assistant", "content": msg})
-    st.chat_message("assistant").write(msg)
+if user_input := st.chat_input('How can i help you?'):
+
+    template_string = """You are Dr.Lang, and you have to explain to me my heathcare report \
+that is delimited by triple backticks. \
+You should also give me some advice on my health conditions. \
+Remember to provide references for your advice, and make sure the link is valid. \
+report: ```{report}```
+"""
+
+    prompt_template = ChatPromptTemplate.from_template(template_string)
+
+    customer_messages = prompt_template.format_messages(
+                    report=user_input)
+    
+    st.session_state.messages.append({"role": "user", "content": customer_messages[0].content})
+    
+    with st.chat_message('user'):
+        st.markdown(user_input)
+    
+    with st.chat_message('assistant'):
+        stream = client.chat.completions.create(
+            model=st.session_state['openai_model'],
+            messages=[{
+                'role': m['role'], 
+                'content': m['content']
+            } for m in st.session_state.messages],
+            stream=True
+        )
+        response = st.write_stream(stream)
+    
+    st.session_state.messages.append({
+        'role': 'assistant',
+        'content': response
+    })
 
     
 # Ask for CSV upload if none is detected
