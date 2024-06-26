@@ -32,20 +32,12 @@ st.title('🧑‍⚕️ Dr.Lang')
 
 with st.expander('About this chat'):
   st.markdown('**What can this chat do?**')
-  st.info('This app allow users to build a machine learning (ML) model in an end-to-end workflow. Particularly, this encompasses data upload, data pre-processing, ML model building and post-model analysis.')
-
+  st.info('Dr.Lang can help anyone understand their healthcare reports.')
   st.markdown('**How to use the app?**')
-  st.warning('To engage with the app, go to the sidebar and 1. Select a data set and 2. Adjust the model parameters by adjusting the various slider widgets. As a result, this would initiate the ML model building process, display the model results as well as allowing users to download the generated models and accompanying data.')
-
-  st.markdown('**Under the hood**')
-  st.markdown('Data sets:')
-  st.code('''- Drug solubility data set
-  ''', language='markdown')
+  st.warning('To engage with the app, go to the sidebar and upload your medical analysis. As a result, Dr.Lang will throughly explain the results.')
   
   st.markdown('Libraries used:')
-  st.code('''- Pandas for data wrangling
-- Scikit-learn for building a machine learning model
-- Altair for chart creation
+  st.code('''- LangChain for LLM development
 - Streamlit for user interface
   ''', language='markdown')
 
@@ -55,7 +47,7 @@ with st.sidebar:
     # Load data
     st.header('Input data')
 
-    uploaded_file = st.file_uploader("Upload a pdf file", type=["pdf"])
+    uploaded_file = st.file_uploader("Upload your file")
     if uploaded_file is not None:
         df = pd.read_csv(uploaded_file, index_col=False)
 
